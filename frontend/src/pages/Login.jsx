@@ -18,8 +18,13 @@ const Login = () => {
     setError('');
     
     try {
-      await login(form.email, form.password);
-      navigate('/');
+      const user = await login(form.email, form.password);
+      // Redirect therapists to their dashboard, others to home
+      if (user?.role === 'therapist') {
+        navigate('/my-appointments');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.message);
     } finally {

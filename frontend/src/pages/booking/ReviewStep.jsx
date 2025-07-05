@@ -65,7 +65,14 @@ const ReviewStep = ({ goNext, goBack, bookingData, updateBookingData }) => {
       }
     } catch (error) {
       console.error('Payment failed:', error);
-      toast.error(error.message || 'Payment failed. Please try again.');
+      if (error.message && error.message.toLowerCase().includes('time slot')) {
+        toast.error('This time slot is already booked. Please choose another time.');
+        // Go back to time selection (assuming goBack() once goes to therapist, twice to time)
+        goBack();
+        goBack();
+      } else {
+        toast.error(error.message || 'Payment failed. Please try again.');
+      }
     } finally {
       setIsProcessing(false);
     }

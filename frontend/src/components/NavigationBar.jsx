@@ -26,7 +26,8 @@ const NavigationBar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const navItems = [
-    { name: 'Home', path: '/', icon: Home },
+    // Only show Home for non-therapists
+    ...(user?.role !== 'therapist' ? [{ name: 'Home', path: '/', icon: Home }] : []),
     // Only show booking for non-therapists
     ...(user?.role !== 'therapist' ? [{ name: 'Book Appointment', path: '/booking', icon: Calendar }] : []),
     ...(user ? [{ 

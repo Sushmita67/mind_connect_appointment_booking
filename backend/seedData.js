@@ -107,7 +107,7 @@ const therapistsData = [
 const adminData = {
     name: 'Admin User',
     email: 'adminmc@yopmail.com',
-    password: '$2a$12$g6/ARXU9qWuiBdcTMS7SlutoccRCHTSTvoWh6OB9GmFaryOv2/wga',
+    password: '$2a$12$NF79y31bYSqq2k/kocTXReZyGaOO0SieMweeCaJG2ntndkbJdMuEG',
     phone: '+977 9827111450',
     role: 'admin',
     isActive: true

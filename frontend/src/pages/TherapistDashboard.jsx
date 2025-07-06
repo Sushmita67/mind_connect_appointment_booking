@@ -263,72 +263,72 @@ const TherapistDashboard = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Calendar size={20} className="text-primary-600" />
-              <h3 className="text-lg font-semibold text-primary-900">
+              <h3 className="text-lg font-bold text-primary-900">
                 All Upcoming Appointments
               </h3>
             </div>
-            <div className="text-sm text-primary-700">
+            <div className="text-base text-primary-700">
               {myUpcomingAppointments.length} appointment{myUpcomingAppointments.length !== 1 ? 's' : ''}
             </div>
           </div>
           {myUpcomingAppointments.length > 0 ? (
-            <div className="space-y-3 max-h-64 overflow-y-auto">
+            <div className="space-y-4 max-h-80 overflow-y-auto">
               {myUpcomingAppointments.map((appointment) => (
                 <div
                   key={appointment._id}
-                  className="p-3 rounded-lg border bg-white border-primary-200"
+                  className="p-4 rounded-xl border bg-white border-primary-200 shadow flex flex-col gap-2"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
-                        <Calendar size={14} className="text-primary-600" />
-                        <span className="text-sm font-medium text-primary-900">
+                        <Calendar size={16} className="text-primary-600" />
+                        <span className="text-base font-semibold text-primary-900">
                           {formatDate(appointment.date)}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Clock size={14} className="text-primary-600" />
-                        <span className="text-sm font-medium text-primary-900">
+                        <Clock size={16} className="text-primary-600" />
+                        <span className="text-base font-semibold text-primary-900">
                           {appointment.time}
                         </span>
                       </div>
                     </div>
-                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(appointment.status)}`}>
+                    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm font-semibold border ${getStatusColor(appointment.status)}`}>
                       {getStatusIcon(appointment.status)}
                       {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
                     </span>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-1">
                     <div className="flex items-center gap-2">
-                      <User size={14} className="text-primary-600" />
-                      <span className="text-sm text-primary-800">
+                      <User size={16} className="text-primary-600" />
+                      <span className="text-base text-primary-800 font-medium">
                         {appointment.client?.name || appointment.guestInfo?.name || 'Client'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Heart size={14} className="text-primary-600" />
-                      <span className="text-sm text-primary-800">
+                      <Heart size={16} className="text-primary-600" />
+                      <span className="text-base text-primary-800 font-medium">
                         {appointment.session?.name || 'Session'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-primary-700">
+                      <span className="text-base font-semibold text-primary-700">
                         Rs.{appointment.price || 0}
                       </span>
                     </div>
                   </div>
                   {(appointment.client?.phone || appointment.client?.email) && (
                     <div className="mt-2 pt-2 border-t border-primary-200">
-                      <div className="flex items-center gap-4 text-xs text-primary-600">
+                      <div className="flex items-center gap-4 text-base text-primary-600">
                         {appointment.client?.phone && (
                           <div className="flex items-center gap-1">
-                            <Phone size={12} />
+                            <Phone size={14} />
                             <span>{appointment.client.phone}</span>
                           </div>
                         )}
                         {appointment.client?.email && (
                           <div className="flex items-center gap-1">
-                            <Mail size={12} />
+                            <Mail size={14} />
                             <span>{appointment.client.email}</span>
                           </div>
                         )}

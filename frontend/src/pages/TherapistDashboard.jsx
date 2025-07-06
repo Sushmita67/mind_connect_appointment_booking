@@ -25,11 +25,24 @@ const TherapistDashboard = () => {
   console.log('appointments', appointments);
   console.log('upcomingAppointments', upcomingAppointments);
 
-  // Filter upcoming appointments for this therapist only (handle both object and string)
+  // Upcoming appointments for this therapist only
   const myUpcomingAppointments = upcomingAppointments.filter(
-    apt => (typeof apt.therapist === 'object' ? apt.therapist?._id : apt.therapist) === user?._id
+    apt =>
+      (typeof apt.therapist === 'object' ? apt.therapist?._id : apt.therapist) === user?._id
   );
-  console.log('myUpcomingAppointments', myUpcomingAppointments);
+
+  // Past appointments for this therapist only
+  const myPastAppointments = pastAppointments.filter(
+    apt =>
+      (typeof apt.therapist === 'object' ? apt.therapist?._id : apt.therapist) === user?._id
+  );
+
+  // Calculate total earnings from past appointments only (filtered)
+  const getTotalEarnings = () => {
+    return myPastAppointments
+      .filter(apt => apt.status === 'completed')
+      .reduce((total, apt) => total + (apt.price || 0), 0);
+  };
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -103,12 +116,6 @@ const TherapistDashboard = () => {
       date,
       appointments: getAppointmentsForDate(date, appointmentsToShow)
     }));
-  };
-
-  const getTotalEarnings = () => {
-    return appointments
-      .filter(apt => apt.status === 'completed')
-      .reduce((total, apt) => total + (apt.price || 0), 0);
   };
 
   const getTotalClients = () => {
@@ -362,12 +369,12 @@ const TherapistDashboard = () => {
               </h3>
             </div>
             <div className="text-sm text-secondary-700">
-              {pastAppointments.length} appointment{pastAppointments.length !== 1 ? 's' : ''}
+              {myPastAppointments.length} appointment{myPastAppointments.length !== 1 ? 's' : ''}
             </div>
           </div>
-          {pastAppointments.length > 0 ? (
+          {myPastAppointments.length > 0 ? (
             <div className="space-y-3 max-h-64 overflow-y-auto">
-              {pastAppointments.map((appointment) => (
+              {myPastAppointments.map((appointment) => (
                 <div
                   key={appointment._id}
                   className="p-3 rounded-lg border bg-white border-secondary-200"

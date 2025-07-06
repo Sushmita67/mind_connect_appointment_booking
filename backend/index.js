@@ -31,10 +31,14 @@ const routes = {
     therapists: require("./routes/therapistRoutes"),
 };
 
+const prescriptionRoutes = require('./routes/prescriptionRoutes');
+
 // Register Routes
 Object.entries(routes).forEach(([key, route]) => {
     app.use(`/api/${key}`, route);
 });
+
+app.use('/api/prescriptions', prescriptionRoutes);
 
 // Default Route
 app.get("/", (req, res) => res.send("MindConnect API Server is running..."));

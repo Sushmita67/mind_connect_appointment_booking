@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, FileText, AlertCircle } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 
-const PrescriptionModal = ({ isOpen, onClose, appointment, patient, therapist, prescription, onSuccess }) => {
+const PrescriptionModal = ({ isOpen, onClose, appointment, patient, therapist, prescription, onSuccess, onDelete }) => {
   const [notes, setNotes] = useState(prescription?.notes || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -16,6 +16,17 @@ const PrescriptionModal = ({ isOpen, onClose, appointment, patient, therapist, p
     e.preventDefault();
     setLoading(true);
     setError('');
+    // Robust ID checks and fallback
+    const appointmentId = appointment?._id;
+    const therapistId = therapist?._id;
+    const patientId = patient?._id || appointment?.client?._id;
+    // Debug log
+    console.log({ appointmentId, therapistId, patientId, notes });
+    if (!appointmentId || !therapistId || !patientId) {
+      setError('Missing required information (appointment, therapist, or patient ID).');
+      setLoading(false);
+      return;
+    }
     try {
       const token = localStorage.getItem('token');
       const method = prescription ? 'PUT' : 'POST';
@@ -27,22 +38,55 @@ const PrescriptionModal = ({ isOpen, onClose, appointment, patient, therapist, p
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          appointment: appointment._id,
-          therapist: therapist._id,
-          patient: patient._id,
+          appointment: appointmentId,
+          therapist: therapistId,
+          patient: patientId,
           notes
         })
       });
       const data = await response.json();
       if ((response.ok && data.success) || (response.status === 200 && data.success)) {
         setNotes('');
-        if (onSuccess) onSuccess(data.data);
+        // Fetch latest prescription after save
+        if (onSuccess) {
+          // Refetch from backend
+          fetch(`${API_BASE_URL}/prescriptions/appointment/${appointmentId}`)
+            .then(res => res.json())
+            .then(latest => onSuccess(latest.data));
+        }
         onClose();
       } else {
         setError(data.message || 'Failed to save prescription');
       }
     } catch (err) {
       setError('Failed to save prescription');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!prescription) return;
+    if (!window.confirm('Are you sure you want to delete this prescription?')) return;
+    setLoading(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/prescriptions/${prescription._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        if (onDelete) onDelete();
+        onClose();
+      } else {
+        setError(data.message || 'Failed to delete prescription');
+      }
+    } catch (err) {
+      setError('Failed to delete prescription');
     } finally {
       setLoading(false);
     }
@@ -94,6 +138,16 @@ const PrescriptionModal = ({ isOpen, onClose, appointment, patient, therapist, p
               </div>
             )}
             <div className="flex gap-4 pt-4 justify-end">
+              {prescription && (
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="px-5 py-2 border border-red-400 text-red-600 bg-white hover:bg-red-50 rounded-xl font-medium transition-colors shadow-sm"
+                  disabled={loading}
+                >
+                  Delete
+                </button>
+              )}
               <button
                 type="button"
                 onClick={onClose}

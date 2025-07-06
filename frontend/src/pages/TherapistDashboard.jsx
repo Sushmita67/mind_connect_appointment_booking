@@ -16,6 +16,7 @@ const TherapistDashboard = () => {
   const [prescriptionViewOpen, setPrescriptionViewOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [prescriptionExists, setPrescriptionExists] = useState({});
+  const [selectedPrescription, setSelectedPrescription] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -182,6 +183,27 @@ const TherapistDashboard = () => {
 
   const handleCreatePrescription = (appointment) => {
     // Implementation of handleCreatePrescription function
+  };
+
+  const handleOpenPrescriptionModal = async (appointment) => {
+    setSelectedAppointment(appointment);
+    // If prescription exists, fetch latest from backend
+    if (prescriptionExists[appointment._id]) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/prescriptions/appointment/${appointment._id}`);
+        const data = await res.json();
+        if (data.success) {
+          setSelectedPrescription(data.data);
+        } else {
+          setSelectedPrescription(null);
+        }
+      } catch {
+        setSelectedPrescription(null);
+      }
+    } else {
+      setSelectedPrescription(null);
+    }
+    setPrescriptionModalOpen(true);
   };
 
   // Fetch prescription existence for past appointments
@@ -464,7 +486,7 @@ const TherapistDashboard = () => {
                     {!prescriptionExists[appointment._id] && (
                       <button
                         className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700 text-xs"
-                        onClick={() => { setSelectedAppointment(appointment); setPrescriptionModalOpen(true); }}
+                        onClick={() => handleOpenPrescriptionModal(appointment)}
                       >
                         Write Prescription
                       </button>
@@ -472,7 +494,7 @@ const TherapistDashboard = () => {
                     {prescriptionExists[appointment._id] && (
                       <button
                         className="px-3 py-1 bg-secondary-600 text-white rounded hover:bg-secondary-700 text-xs"
-                        onClick={() => { setSelectedAppointment(appointment); setPrescriptionModalOpen(true); }}
+                        onClick={() => handleOpenPrescriptionModal(appointment)}
                       >
                         View/Edit Prescription
                       </button>
@@ -497,8 +519,9 @@ const TherapistDashboard = () => {
         appointment={selectedAppointment}
         patient={selectedAppointment?.client}
         therapist={user}
-        prescription={prescriptionExists[selectedAppointment?._id]}
+        prescription={selectedPrescription}
         onSuccess={() => setPrescriptionExists(prev => ({ ...prev, [selectedAppointment._id]: true }))}
+        onDelete={() => setPrescriptionExists(prev => ({ ...prev, [selectedAppointment._id]: false }))}
       />
       {/* Prescription View Modal */}
       <PrescriptionView

@@ -14,4 +14,7 @@ router.get('/patient/:patientId', prescriptionController.getPrescriptionsByPatie
 // Update prescription by ID
 router.put('/:id', prescriptionController.updatePrescription);
 
+// Delete prescription by ID
+router.delete('/:id', prescriptionController.deletePrescription);
+
 module.exports = router; 

@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin, User, Phone, Mail, Heart, Clock3, CheckCircle, XCircle, AlertCircle, Users, DollarSign, FileText } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useBooking } from '../contexts/BookingContext';
+import PrescriptionModal from '../components/PrescriptionModal';
+import PrescriptionView from '../components/PrescriptionView';
 
 const TherapistDashboard = () => {
   const { user } = useAuth();
@@ -10,6 +12,10 @@ const TherapistDashboard = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [loading, setLoading] = useState(true);
   const [selectedWeek, setSelectedWeek] = useState(new Date());
+  const [prescriptionModalOpen, setPrescriptionModalOpen] = useState(false);
+  const [prescriptionViewOpen, setPrescriptionViewOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [prescriptionExists, setPrescriptionExists] = useState({});
 
   useEffect(() => {
     if (user) {
@@ -177,6 +183,24 @@ const TherapistDashboard = () => {
   const handleCreatePrescription = (appointment) => {
     // Implementation of handleCreatePrescription function
   };
+
+  // Fetch prescription existence for past appointments
+  useEffect(() => {
+    const fetchPrescriptions = async () => {
+      const results = {};
+      for (const apt of myPastAppointments) {
+        try {
+          const res = await fetch(`${API_BASE_URL}/prescriptions/appointment/${apt._id}`);
+          const data = await res.json();
+          results[apt._id] = data.success && data.data;
+        } catch {
+          results[apt._id] = false;
+        }
+      }
+      setPrescriptionExists(results);
+    };
+    if (myPastAppointments.length > 0) fetchPrescriptions();
+  }, [myPastAppointments]);
 
   if (loading || !user || !appointments) {
     return (
@@ -436,18 +460,24 @@ const TherapistDashboard = () => {
                       </div>
                     </div>
                   )}
-                  {/* Write Prescription button for completed appointments */}
-                  {appointment.status === 'completed' && (
-                    <div className="mt-3 flex justify-end">
+                  <div className="flex gap-2 mt-2">
+                    {!prescriptionExists[appointment._id] && (
                       <button
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        onClick={() => handleCreatePrescription(appointment)}
+                        className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700 text-xs"
+                        onClick={() => { setSelectedAppointment(appointment); setPrescriptionModalOpen(true); }}
                       >
-                        <FileText size={16} />
                         Write Prescription
                       </button>
-                    </div>
-                  )}
+                    )}
+                    {prescriptionExists[appointment._id] && (
+                      <button
+                        className="px-3 py-1 bg-secondary-600 text-white rounded hover:bg-secondary-700 text-xs"
+                        onClick={() => { setSelectedAppointment(appointment); setPrescriptionModalOpen(true); }}
+                      >
+                        View/Edit Prescription
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -460,6 +490,22 @@ const TherapistDashboard = () => {
           )}
         </motion.div>
       </div>
+      {/* Prescription Modal */}
+      <PrescriptionModal
+        isOpen={prescriptionModalOpen}
+        onClose={() => setPrescriptionModalOpen(false)}
+        appointment={selectedAppointment}
+        patient={selectedAppointment?.client}
+        therapist={user}
+        prescription={prescriptionExists[selectedAppointment?._id]}
+        onSuccess={() => setPrescriptionExists(prev => ({ ...prev, [selectedAppointment._id]: true }))}
+      />
+      {/* Prescription View Modal */}
+      <PrescriptionView
+        isOpen={prescriptionViewOpen}
+        onClose={() => setPrescriptionViewOpen(false)}
+        appointmentId={selectedAppointment?._id}
+      />
     </div>
   );
 };

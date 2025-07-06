@@ -6,6 +6,7 @@ import { useBooking } from '../contexts/BookingContext';
 import { useNavigate } from 'react-router-dom';
 import RescheduleModal from '../components/RescheduleModal';
 import TherapistDashboard from './TherapistDashboard';
+import PrescriptionView from '../components/PrescriptionView';
 
 const MyAppointments = () => {
   const { user } = useAuth();
@@ -13,6 +14,8 @@ const MyAppointments = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [loading, setLoading] = useState(true);
   const [rescheduleModal, setRescheduleModal] = useState({ isOpen: false, appointment: null });
+  const [prescriptionViewOpen, setPrescriptionViewOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -357,16 +360,16 @@ const MyAppointments = () => {
                             Cancel
                           </button>
                         )}
-                        {/*{activeTab === 'upcoming' && (*/}
-                        {/*  <button className="btn-primary text-sm px-4 py-2">*/}
-                        {/*    Join Session*/}
-                        {/*  </button>*/}
-                        {/*)}*/}
-                        {/*{activeTab === 'past' && (*/}
-                        {/*  <button className="btn-secondary text-sm px-4 py-2">*/}
-                        {/*    Book Again*/}
-                        {/*  </button>*/}
-                        {/*)}*/}
+                        {activeTab === 'past' && (
+                          <div className="flex gap-2 mt-2">
+                            <button
+                              className="px-3 py-1 bg-secondary-600 text-white rounded hover:bg-secondary-700 text-xs"
+                              onClick={() => { setSelectedAppointment(appointment); setPrescriptionViewOpen(true); }}
+                            >
+                              View Prescription/Notes
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -385,6 +388,13 @@ const MyAppointments = () => {
           appointment={rescheduleModal.appointment}
         />
       )}
+
+      {/* Prescription View Modal */}
+      <PrescriptionView
+        isOpen={prescriptionViewOpen}
+        onClose={() => setPrescriptionViewOpen(false)}
+        appointmentId={selectedAppointment?._id}
+      />
     </div>
   );
 };

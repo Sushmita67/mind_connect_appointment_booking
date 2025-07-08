@@ -3,9 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, FileText, AlertCircle } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 
-const PrescriptionView = ({ isOpen, onClose, prescription, loading, error }) => {
+// Accept either 'prescription' (string) or 'appointment' (object)
+const PrescriptionView = ({ isOpen, onClose, prescription, appointment, loading, error }) => {
   if (!isOpen) return null;
-
+  // Prefer prescription string if provided, else use appointment.prescription
+  const displayPrescription = prescription ?? appointment?.prescription;
+  const therapistName = appointment?.therapist?.name;
+  const date = appointment ? (appointment.updatedAt || appointment.createdAt) : null;
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -45,15 +49,17 @@ const PrescriptionView = ({ isOpen, onClose, prescription, loading, error }) => 
                 <AlertCircle size={32} className="text-red-500" />
                 <span className="text-base text-red-700">{error}</span>
               </div>
-            ) : prescription ? (
+            ) : displayPrescription ? (
               <div className="bg-secondary-50 border border-secondary-200 rounded-xl shadow p-6">
-                <div className="mb-4 text-secondary-600 text-sm flex flex-col md:flex-row md:items-center md:gap-4">
-                  <span><strong>Therapist:</strong> {prescription.therapist?.name}</span>
-                  <span className="hidden md:inline">|</span>
-                  <span><strong>Date:</strong> {new Date(prescription.createdAt).toLocaleString()}</span>
-                </div>
+                {therapistName && date && (
+                  <div className="mb-4 text-secondary-600 text-sm flex flex-col md:flex-row md:items-center md:gap-4">
+                    <span><strong>Therapist:</strong> {therapistName}</span>
+                    <span className="hidden md:inline">|</span>
+                    <span><strong>Date:</strong> {new Date(date).toLocaleString()}</span>
+                  </div>
+                )}
                 <div className="whitespace-pre-line text-secondary-900 text-lg font-medium">
-                  {prescription.notes}
+                  {displayPrescription}
                 </div>
               </div>
             ) : (

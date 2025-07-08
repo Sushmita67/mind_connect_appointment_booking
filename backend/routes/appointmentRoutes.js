@@ -9,7 +9,8 @@ const {
     updateAppointmentDateTime,
     cancelAppointment,
     getTherapistAppointments,
-    getAllAppointments
+    getAllAppointments,
+    getAppointmentsByTherapistAndDate
 } = require("../controllers/appointmentController");
 const { authenticateToken, authorizeRole, authenticateTokenOptional } = require("../security/Auth");
 
@@ -19,6 +20,7 @@ router.post("/", authenticateTokenOptional, createAppointment);
 // Protected routes
 router.get("/user", authenticateToken, getUserAppointments);
 router.get("/therapist", authenticateToken, authorizeRole(["therapist"]), getTherapistAppointments);
+router.get("/therapist/:id", getAppointmentsByTherapistAndDate);
 router.get("/:id", authenticateToken, getAppointmentById);
 router.put("/:id/status", authenticateToken, updateAppointmentStatus);
 router.put("/:id/reschedule", authenticateToken, rescheduleAppointment);

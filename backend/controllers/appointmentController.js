@@ -697,6 +697,31 @@ const getAllAppointments = async (req, res) => {
     }
 };
 
+// Get all appointments for a therapist (public, by therapistId and optional date)
+const getAppointmentsByTherapistAndDate = async (req, res) => {
+    try {
+        const therapistId = req.params.id;
+        const { date } = req.query;
+        if (!therapistId) {
+            return res.status(400).json({ success: false, message: 'Therapist ID is required' });
+        }
+        let query = { therapist: therapistId, isActive: true, status: { $ne: 'cancelled' } };
+        if (date) {
+            const startDate = new Date(date);
+            const endDate = new Date(date);
+            endDate.setDate(endDate.getDate() + 1);
+            query.date = { $gte: startDate, $lt: endDate };
+        }
+        const appointments = await Appointment.find(query)
+            .populate('session')
+            .populate('client', 'name email phone')
+            .sort({ date: 1, time: 1 });
+        res.status(200).json({ success: true, data: appointments });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error fetching appointments', error: error.message });
+    }
+};
+
 module.exports = {
     createAppointment,
     getUserAppointments,
@@ -706,5 +731,6 @@ module.exports = {
     updateAppointmentDateTime,
     cancelAppointment,
     getTherapistAppointments,
-    getAllAppointments
+    getAllAppointments,
+    getAppointmentsByTherapistAndDate
 }; 

@@ -4,6 +4,7 @@ require("dotenv").config();
 
 const User = require("./models/User");
 const Session = require("./models/Session");
+const Appointment = require("./models/Appointment");
 
 const connectDB = require("./middleware/db");
 
@@ -88,7 +89,7 @@ const therapistsData = [
     {
         name: 'Dr. Lata Shrestha',
         email: 'therapist@yopmail.com',
-        password: '$2a$12$B8pGNbo4klJmhbbFmCGIN.Q7ubvOT7hnWIOuXFRVDCxFfajWVkcXm',
+        password: '$2a$12$ATSs9EPeuX6dORhaL7C6iOtW/./.vzfA2BKscchEjD65gakrz5idC',
         phone: '+977 9812134578',
         specialization: 'Anxiety & Depression',
         experience: '8 years',
@@ -100,8 +101,8 @@ const therapistsData = [
     },
     {
         name: 'Dr. Nyoman Gitanjaya',
-        email: 'dr.ngitanjaya@mindconnect.com',
-        password: '$2a$12$MatLvquGoeNGhVAhBiFN2.lIFHSULyO1GSBSm6dW4Ag6kC5dQ27.2',
+        email: 'therapist1@yopmail.com',
+        password: '$2a$12$ATSs9EPeuX6dORhaL7C6iOtW/./.vzfA2BKscchEjD65gakrz5idC',
         phone: '+977 9745874151',
         specialization: 'Stress Management',
         experience: '12 years',
@@ -113,8 +114,8 @@ const therapistsData = [
     },
     {
         name: 'Dr. Bina Paudel',
-        email: 'dr.bpaudel@mindconnect.com',
-        password: '$2a$12$MatLvquGoeNGhVAhBiFN2.lIFHSULyO1GSBSm6dW4Ag6kC5dQ27.2',
+        email: 'therapist2@yopmail.com',
+        password: '$2a$12$ATSs9EPeuX6dORhaL7C6iOtW/./.vzfA2BKscchEjD65gakrz5idC',
         phone: '+977 9856784589',
         specialization: 'Trauma & PTSD',
         experience: '10 years',
@@ -126,8 +127,8 @@ const therapistsData = [
     },
     {
         name: 'Dr. Deepak Biswakarma',
-        email: 'dr.bbiswakarma@mindconnect.com',
-        password: '$2a$12$MatLvquGoeNGhVAhBiFN2.lIFHSULyO1GSBSm6dW4Ag6kC5dQ27.2',
+        email: 'therapist3@yopmail.com',
+        password: '$2a$12$ATSs9EPeuX6dORhaL7C6iOtW/./.vzfA2BKscchEjD65gakrz5idC',
         phone: '+977 9825456354',
         specialization: 'Relationship Counseling',
         experience: '15 years',
@@ -142,7 +143,7 @@ const therapistsData = [
 // Sample admin user
 const adminData = {
     name: 'Admin User',
-    email: 'adminmc@yopmail.com',
+    email: 'admin@mindconnect.com.np',
     password: '$2a$12$NF79y31bYSqq2k/kocTXReZyGaOO0SieMweeCaJG2ntndkbJdMuEG',
     phone: '+977 9827111450',
     role: 'admin',
@@ -158,6 +159,7 @@ const seedDatabase = async () => {
         // Clear existing data
         await User.deleteMany({});
         await Session.deleteMany({});
+        await Appointment.deleteMany({});
         console.log('Cleared existing data');
 
         // Create admin user
@@ -192,6 +194,62 @@ const seedDatabase = async () => {
             sessions.push(session);
         }
         console.log('Created sessions');
+
+        // Define appointmentsData before using it
+        const appointmentsData = [];
+        // Add three more dummy appointments for therapist1, therapist2, and therapist3
+        if (therapists.length >= 4 && sessions.length >= 4) {
+          appointmentsData.push(
+            {
+              client: null,
+              therapist: therapists[1]._id, // therapist1@yopmail.com
+              session: sessions[1]._id,
+              date: new Date(Date.now() + 3 * 86400000),
+              time: '11:00 AM',
+              duration: 60,
+              price: 1199,
+              location: 'Virtual Session',
+              paymentMethod: 'Credit Card',
+              paymentStatus: 'paid',
+              status: 'confirmed',
+              prescription: 'Practice deep breathing exercises daily.'
+            },
+            {
+              client: null,
+              therapist: therapists[2]._id, // therapist2@yopmail.com
+              session: sessions[2]._id,
+              date: new Date(Date.now() + 4 * 86400000),
+              time: '1:00 PM',
+              duration: 45,
+              price: 999,
+              location: 'Virtual Session',
+              paymentMethod: 'Credit Card',
+              paymentStatus: 'paid',
+              status: 'confirmed',
+              prescription: 'Keep a gratitude journal.'
+            },
+            {
+              client: null,
+              therapist: therapists[3]._id, // therapist3@yopmail.com
+              session: sessions[3]._id,
+              date: new Date(Date.now() + 5 * 86400000),
+              time: '3:00 PM',
+              duration: 90,
+              price: 1499,
+              location: 'Virtual Session',
+              paymentMethod: 'Credit Card',
+              paymentStatus: 'paid',
+              status: 'confirmed',
+              prescription: 'Try progressive muscle relaxation before bed.'
+            }
+          );
+        }
+        // Seed appointments
+        for (const appointmentData of appointmentsData) {
+          const appointment = new Appointment(appointmentData);
+          await appointment.save();
+        }
+        console.log('Created appointments with prescription field.');
 
         console.log('Database seeded successfully!');
         console.log(`Created ${therapists.length} therapists`);

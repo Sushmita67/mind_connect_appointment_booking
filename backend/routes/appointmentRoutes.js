@@ -10,7 +10,9 @@ const {
     cancelAppointment,
     getTherapistAppointments,
     getAllAppointments,
-    getAppointmentsByTherapistAndDate
+    getAppointmentsByTherapistAndDate,
+    updateAppointmentPrescription,
+    getAppointmentPrescription
 } = require("../controllers/appointmentController");
 const { authenticateToken, authorizeRole, authenticateTokenOptional } = require("../security/Auth");
 
@@ -26,6 +28,10 @@ router.put("/:id/status", authenticateToken, updateAppointmentStatus);
 router.put("/:id/reschedule", authenticateToken, rescheduleAppointment);
 router.patch("/:id/datetime", authenticateToken, updateAppointmentDateTime);
 router.put("/:id/cancel", authenticateToken, cancelAppointment);
+router.patch('/:id/prescription', authenticateToken, updateAppointmentPrescription);
+
+// Add GET route for prescription view
+router.get('/:id/prescription', authenticateToken, getAppointmentPrescription);
 
 // Admin only routes
 router.get("/", authenticateToken, authorizeRole(["admin"]), getAllAppointments);

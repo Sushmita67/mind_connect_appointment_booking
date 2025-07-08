@@ -38,13 +38,49 @@ const sessionsData = [
     },
     {
         name: 'Stress Relief',
-        description: 'Relaxation techniques and stress management strategies',
+        description: 'Relaxation techniques and stress management strategies.',
         duration: 30,
         price: 899,
         icon: '🌸',
         image: 'http://localhost:4000/uploads/stress_relief_session.jpg',
         features: ['Relaxation techniques', 'Time management', 'Boundary setting', 'Self-care planning']
-    }
+    },
+    {
+        name: 'Mindfulness & Relaxation Training',
+        description: 'Learn meditation, breathing exercises and grounding techniques.',
+        duration: 60,
+        price: 1199,
+        icon: '🧘',
+        image: 'http://localhost:4000/uploads/stress_relief_session.jpg',
+        features: ['Relaxation techniques', 'Time management', 'Boundary setting', 'Self-care planning']
+    },
+    {
+        name: 'Anger Management',
+        description: 'Learn to control reactions and respond with calm.',
+        duration: 45,
+        price: 1099,
+        icon: '😤',
+        image: 'http://localhost:4000/uploads/depression_session.jpg',
+        features: ['Mood improvement', 'Behavioral activation', 'Thought reframing', 'Lifestyle changes']
+    },
+    {
+        name: 'Adolescent Support',
+        description: 'Support for teenagers facing academic stress, peer pressure, identity challenges, and emotional ups and downs.',
+        duration: 90,
+        price: 1499,
+        icon: '🤝',
+        image: 'http://localhost:4000/uploads/depression_session.jpg',
+        features: ['Mood improvement', 'Behavioral activation', 'Thought reframing', 'Lifestyle changes']
+    },
+    {
+        name: 'Depression Support',
+        description: 'Supportive therapy for managing depression and low mood',
+        duration: 90,
+        price: 1499,
+        icon: '🌱',
+        image: 'http://localhost:4000/uploads/depression_session.jpg',
+        features: ['Mood improvement', 'Behavioral activation', 'Thought reframing', 'Lifestyle changes']
+    },
 ];
 
 // Sample therapists data
@@ -52,7 +88,7 @@ const therapistsData = [
     {
         name: 'Dr. Lata Shrestha',
         email: 'therapist@yopmail.com',
-        password: '$2a$12$isGU9SLPZysxELVEHDFNqe/ksQt2ENYkK4Z9hahS7SObj5HgOKCQy',
+        password: '$2a$12$B8pGNbo4klJmhbbFmCGIN.Q7ubvOT7hnWIOuXFRVDCxFfajWVkcXm',
         phone: '+977 9812134578',
         specialization: 'Anxiety & Depression',
         experience: '8 years',
@@ -65,7 +101,7 @@ const therapistsData = [
     {
         name: 'Dr. Nyoman Gitanjaya',
         email: 'dr.ngitanjaya@mindconnect.com',
-        password: '$2a$12$isGU9SLPZysxELVEHDFNqe/ksQt2ENYkK4Z9hahS7SObj5HgOKCQy',
+        password: '$2a$12$MatLvquGoeNGhVAhBiFN2.lIFHSULyO1GSBSm6dW4Ag6kC5dQ27.2',
         phone: '+977 9745874151',
         specialization: 'Stress Management',
         experience: '12 years',
@@ -78,7 +114,7 @@ const therapistsData = [
     {
         name: 'Dr. Bina Paudel',
         email: 'dr.bpaudel@mindconnect.com',
-        password: '$2a$12$isGU9SLPZysxELVEHDFNqe/ksQt2ENYkK4Z9hahS7SObj5HgOKCQy',
+        password: '$2a$12$MatLvquGoeNGhVAhBiFN2.lIFHSULyO1GSBSm6dW4Ag6kC5dQ27.2',
         phone: '+977 9856784589',
         specialization: 'Trauma & PTSD',
         experience: '10 years',
@@ -91,7 +127,7 @@ const therapistsData = [
     {
         name: 'Dr. Deepak Biswakarma',
         email: 'dr.bbiswakarma@mindconnect.com',
-        password: '$2a$12$isGU9SLPZysxELVEHDFNqe/ksQt2ENYkK4Z9hahS7SObj5HgOKCQy',
+        password: '$2a$12$MatLvquGoeNGhVAhBiFN2.lIFHSULyO1GSBSm6dW4Ag6kC5dQ27.2',
         phone: '+977 9825456354',
         specialization: 'Relationship Counseling',
         experience: '15 years',

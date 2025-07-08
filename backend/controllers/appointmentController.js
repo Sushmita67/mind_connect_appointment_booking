@@ -104,7 +104,8 @@ const createAppointment = async (req, res) => {
             paymentMethod,
             guestInfo: guestInfoData,
             status: 'confirmed', // Mark as confirmed since payment is complete
-            paymentStatus: 'paid' // Mark as paid since payment is complete
+            paymentStatus: 'paid', // Mark as paid since payment is complete
+            prescription: 'Not Prescribed',
         });
 
         await appointment.save();
@@ -722,6 +723,54 @@ const getAppointmentsByTherapistAndDate = async (req, res) => {
     }
 };
 
+// Add a PATCH handler to update prescription
+const updateAppointmentPrescription = async (req, res) => {
+  try {
+    const appointmentId = req.params.id;
+    const { prescription } = req.body;
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment) {
+      return res.status(404).json({ success: false, message: 'Appointment not found' });
+    }
+    // Only therapist or admin can update prescription
+    if (
+      req.user.role !== 'admin' &&
+      appointment.therapist.toString() !== req.user.id
+    ) {
+      return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    appointment.prescription = prescription;
+    await appointment.save();
+    res.status(200).json({ success: true, message: 'Prescription updated', data: appointment });
+  } catch (error) {
+    res.status(400).json({ success: false, message: 'Error updating prescription', error: error.message });
+  }
+};
+
+// Get only the prescription for an appointment
+const getAppointmentPrescription = async (req, res) => {
+  try {
+    const appointmentId = req.params.id;
+    const appointment = await Appointment.findById(appointmentId)
+      .populate('client', 'name')
+      .populate('therapist', 'name');
+    if (!appointment) {
+      return res.status(404).json({ success: false, message: 'Appointment not found' });
+    }
+    // Only client, therapist, or admin can view
+    if (
+      req.user.role !== 'admin' &&
+      appointment.client?._id?.toString() !== req.user.id &&
+      appointment.therapist?._id?.toString() !== req.user.id
+    ) {
+      return res.status(403).json({ success: false, message: 'Access denied' });
+    }
+    res.status(200).json({ success: true, prescription: appointment.prescription });
+  } catch (error) {
+    res.status(400).json({ success: false, message: 'Error fetching prescription', error: error.message });
+  }
+};
+
 module.exports = {
     createAppointment,
     getUserAppointments,
@@ -732,5 +781,7 @@ module.exports = {
     cancelAppointment,
     getTherapistAppointments,
     getAllAppointments,
-    getAppointmentsByTherapistAndDate
+    getAppointmentsByTherapistAndDate,
+    updateAppointmentPrescription,
+    getAppointmentPrescription
 }; 

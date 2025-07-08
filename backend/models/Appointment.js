@@ -32,6 +32,7 @@ const AppointmentSchema = new mongoose.Schema({
         enum: ["pending", "paid", "refunded"], 
         default: "pending" 
     },
+    prescription: { type: String, default: 'Not Prescribed' },
     // For guest bookings (when user is not logged in)
     guestInfo: {
         name: { type: String },

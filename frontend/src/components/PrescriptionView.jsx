@@ -3,29 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, FileText, AlertCircle } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 
-const PrescriptionView = ({ isOpen, onClose, appointmentId }) => {
-  const [prescription, setPrescription] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (isOpen && appointmentId) {
-      setLoading(true);
-      setError('');
-      fetch(`${API_BASE_URL}/prescriptions/appointment/${appointmentId}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            setPrescription(data.data);
-          } else {
-            setError(data.message || 'No prescription found');
-          }
-        })
-        .catch(() => setError('Failed to fetch prescription'))
-        .finally(() => setLoading(false));
-    }
-  }, [isOpen, appointmentId]);
-
+const PrescriptionView = ({ isOpen, onClose, prescription, loading, error }) => {
   if (!isOpen) return null;
 
   return (

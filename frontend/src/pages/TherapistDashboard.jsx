@@ -7,7 +7,7 @@ import PrescriptionModal from '../components/PrescriptionModal';
 import PrescriptionView from '../components/PrescriptionView';
 
 const TherapistDashboard = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { appointments, fetchTherapistAppointments, getUpcomingAppointments, getPastAppointments } = useBooking();
   const [activeTab, setActiveTab] = useState('upcoming');
   const [loading, setLoading] = useState(true);
@@ -19,10 +19,11 @@ const TherapistDashboard = () => {
   const [selectedPrescription, setSelectedPrescription] = useState(null);
 
   useEffect(() => {
-    if (user) {
+    if (!authLoading && user) {
+      setLoading(true);
       fetchTherapistAppointments().finally(() => setLoading(false));
     }
-  }, [user, fetchTherapistAppointments]);
+  }, [user, authLoading]);
 
   const upcomingAppointments = getUpcomingAppointments();
   const pastAppointments = getPastAppointments();
@@ -187,42 +188,44 @@ const TherapistDashboard = () => {
 
   const handleOpenPrescriptionModal = async (appointment) => {
     setSelectedAppointment(appointment);
-    // If prescription exists, fetch latest from backend
-    if (prescriptionExists[appointment._id]) {
-      try {
-        const res = await fetch(`${API_BASE_URL}/prescriptions/appointment/${appointment._id}`);
-        const data = await res.json();
-        if (data.success) {
-          setSelectedPrescription(data.data);
-        } else {
-          setSelectedPrescription(null);
-        }
-      } catch {
+    try {
+      const res = await fetch(`${API_BASE_URL}/prescriptions/appointment/${appointment._id}`);
+      const data = await res.json();
+      if (data.success && data.data) {
+        setSelectedPrescription(data.data);
+        setPrescriptionExists(prev => ({ ...prev, [appointment._id]: true }));
+      } else {
         setSelectedPrescription(null);
+        setPrescriptionExists(prev => ({ ...prev, [appointment._id]: false }));
       }
-    } else {
+    } catch {
       setSelectedPrescription(null);
+      setPrescriptionExists(prev => ({ ...prev, [appointment._id]: false }));
     }
     setPrescriptionModalOpen(true);
   };
 
-  // Fetch prescription existence for past appointments
-  useEffect(() => {
-    const fetchPrescriptions = async () => {
-      const results = {};
-      for (const apt of myPastAppointments) {
-        try {
-          const res = await fetch(`${API_BASE_URL}/prescriptions/appointment/${apt._id}`);
-          const data = await res.json();
-          results[apt._id] = data.success && data.data;
-        } catch {
-          results[apt._id] = false;
-        }
-      }
-      setPrescriptionExists(results);
-    };
-    if (myPastAppointments.length > 0) fetchPrescriptions();
-  }, [myPastAppointments]);
+  // Remove the prescription existence fetch on mount
+  // Instead, check prescription existence only when opening the modal
+  // useEffect(() => {
+  //   const fetchPrescriptions = async () => {
+  //     const results = {};
+  //     for (const apt of myPastAppointments) {
+  //       try {
+  //         const res = await fetch(`${API_BASE_URL}/prescriptions/appointment/${apt._id}`);
+  //         const data = await res.json();
+  //         results[apt._id] = data.success && data.data;
+  //       } catch {
+  //         results[apt._id] = false;
+  //       }
+  //     }
+  //     setPrescriptionExists(results);
+  //   };
+  //   // Only depend on IDs to avoid infinite loop
+  //   const ids = myPastAppointments.map(a => a._id).join(',');
+  //   if (myPastAppointments.length > 0) fetchPrescriptions();
+  //   // eslint-disable-next-line
+  // }, [myPastAppointments.length, myPastAppointments.map(a => a._id).join(',')]);
 
   if (loading || !user || !appointments) {
     return (

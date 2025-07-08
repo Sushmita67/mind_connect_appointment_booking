@@ -16,7 +16,6 @@ import SignUp from './pages/SignUp';
 import ResetPassword from './pages/ResetPasswordNew';
 import BookingPage from './pages/BookingPage';
 import MyAppointments from './pages/MyAppointments';
-import TherapistDashboard from './pages/TherapistDashboard';
 import AccountRouter from './pages/AccountRouter';
 
 function App() {
@@ -42,11 +41,11 @@ function App() {
                     <MyAppointments />
                   </ProtectedRoute>
                 } />
-                <Route path="/therapist-dashboard" element={
+                {/* <Route path="/therapist-dashboard" element={
                   <ProtectedRoute allowedRoles={['therapist']}>
                     <TherapistDashboard />
                   </ProtectedRoute>
-                } />
+                } /> */}
                 <Route path="/account/*" element={
                   <ProtectedRoute>
                     <AccountRouter />

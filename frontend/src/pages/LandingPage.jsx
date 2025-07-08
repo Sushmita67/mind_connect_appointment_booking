@@ -47,7 +47,7 @@ const LandingPage = () => {
       const timer = setTimeout(() => {
         setShowPopup(true);
         localStorage.removeItem('showClientWelcome');
-      }, 2000);
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [user]);

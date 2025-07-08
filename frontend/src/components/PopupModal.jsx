@@ -21,7 +21,7 @@ const PopupModal = ({ isOpen, onClose }) => {
     if (!isOpen) return;
     const timer = setTimeout(() => {
       onClose();
-    }, 3000); // Changed from 5000 to 4000
+    }, 4000); // Changed from 5000 to 4000
     return () => clearTimeout(timer);
   }, [isOpen, onClose]);
 
@@ -43,12 +43,12 @@ const PopupModal = ({ isOpen, onClose }) => {
           <div className="text-lg text-secondary-800 mb-4 text-center">
             {message}
           </div>
-          <button
+          {/* <button
             onClick={onClose}
             className="mt-2 px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-xl font-semibold flex items-center gap-2 shadow-sm transition-colors"
           >
             <span role="img" aria-label="smile">😊</span> Close
-          </button>
+          </button> */}
         </motion.div>
       </div>
     </AnimatePresence>

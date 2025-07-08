@@ -5,8 +5,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { useBooking } from '../contexts/BookingContext';
 import { useNavigate } from 'react-router-dom';
 import RescheduleModal from '../components/RescheduleModal';
-import TherapistDashboard from './TherapistDashboard';
+// import TherapistDashboard from './TherapistDashboard';
 import PrescriptionView from '../components/PrescriptionView';
+import PrescriptionModal from '../components/PrescriptionModal';
 
 const MyAppointments = () => {
   const { user, loading: authLoading } = useAuth();
@@ -23,13 +24,21 @@ const MyAppointments = () => {
     fetchPrescriptionByAppointment,
     selectedPrescription,
     prescriptionLoading,
-    prescriptionError
+    prescriptionError,
+    createOrUpdatePrescription,
+    getAppointmentById,
+    updateAppointmentPrescription,
+    getAppointmentPrescription,
   } = useBooking();
   const [activeTab, setActiveTab] = useState('upcoming');
   const [loading, setLoading] = useState(true);
   const [rescheduleModal, setRescheduleModal] = useState({ isOpen: false, appointment: null });
   const [prescriptionViewOpen, setPrescriptionViewOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [prescriptionModalOpen, setPrescriptionModalOpen] = useState(false);
+  const [prescriptionModalAppointment, setPrescriptionModalAppointment] = useState(null);
+  const [prescriptionViewAppointment, setPrescriptionViewAppointment] = useState(null);
+  const [prescriptionViewPrescription, setPrescriptionViewPrescription] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,7 +50,7 @@ const MyAppointments = () => {
         fetchUserAppointments().finally(() => setLoading(false));
       }
     }
-  }, [user, authLoading]);
+  }, [user, authLoading, fetchTherapistAppointments, fetchUserAppointments]);
 
   const upcomingAppointments = getUpcomingAppointments();
   const pastAppointments = getPastAppointments();
@@ -107,9 +116,20 @@ const MyAppointments = () => {
   };
 
   const handleViewPrescription = async (appointment) => {
-    setSelectedAppointment(appointment);
-    setPrescriptionViewOpen(true);
-    await fetchPrescriptionByAppointment(appointment._id);
+    if (user?.role === 'therapist') {
+      const fullAppointment = await getAppointmentById(appointment._id);
+      setPrescriptionModalAppointment(fullAppointment);
+      setPrescriptionModalOpen(true);
+    } else {
+      const prescription = await getAppointmentPrescription(appointment._id);
+      setPrescriptionViewPrescription(prescription);
+      setPrescriptionViewOpen(true);
+    }
+  };
+
+  const handlePrescriptionModalSuccess = async (updatedAppointment) => {
+    setPrescriptionModalOpen(false);
+    // Optionally update local state if needed
   };
 
   const appointmentsToShow = activeTab === 'upcoming' ? upcomingAppointments : pastAppointments;
@@ -118,14 +138,24 @@ const MyAppointments = () => {
     return (
       <div className="min-h-screen bg-secondary-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        <div className="mt-4 text-secondary-600">Loading appointments...</div>
       </div>
     );
   }
 
-  // Show therapist dashboard if user is a therapist
-  if (user?.role === 'therapist') {
-    return <TherapistDashboard />;
-  }
+  // // Show therapist dashboard if user is a therapist
+  // if (user?.role === 'therapist') {
+  //   // Ensure appointments are loaded before showing dashboard
+  //   if (loading || !appointments) {
+  //     return (
+  //       <div className="min-h-screen bg-secondary-50 flex items-center justify-center">
+  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+  //         <div className="mt-4 text-secondary-600">Loading appointments...</div>
+  //       </div>
+  //     );
+  //   }
+  //   return <TherapistDashboard />;
+  // }
 
   return (
     <div className="min-h-screen bg-secondary-50 py-8">
@@ -188,7 +218,7 @@ const MyAppointments = () => {
           <div className="bg-white rounded-xl shadow-sm p-6 border border-secondary-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-secondary-600">Total Spent</p>
+                <p className="text-sm font-medium text-secondary-600">{user?.role === 'therapist' ? 'Total Revenue' : 'Total Spent'}</p>
                 <p className="text-2xl font-bold text-secondary-900">
                   Rs.{appointments.reduce((total, apt) => total + (apt.price || 0), 0)}
                 </p>
@@ -368,7 +398,7 @@ const MyAppointments = () => {
                         )}
                       </div>
                       <div className="flex gap-2">
-                        {activeTab === 'upcoming' && appointment.status === 'confirmed' && (
+                        {activeTab === 'upcoming' && appointment.status === 'confirmed' && user?.role !== 'therapist' && (
                           <button className="btn-secondary text-sm px-4 py-2" onClick={() => handleReschedule(appointment)}>
                             Reschedule
                           </button>
@@ -410,14 +440,25 @@ const MyAppointments = () => {
         />
       )}
 
-      {/* Prescription View Modal */}
-      <PrescriptionView
-        isOpen={prescriptionViewOpen}
-        onClose={() => setPrescriptionViewOpen(false)}
-        prescription={selectedPrescription}
-        loading={prescriptionLoading}
-        error={prescriptionError}
-      />
+      {/* Prescription Modal for therapists */}
+      {user?.role === 'therapist' && prescriptionModalOpen && prescriptionModalAppointment && (
+        <PrescriptionModal
+          isOpen={prescriptionModalOpen}
+          onClose={() => setPrescriptionModalOpen(false)}
+          appointment={prescriptionModalAppointment}
+          onSuccess={handlePrescriptionModalSuccess}
+        />
+      )}
+      {/* Prescription View Modal for non-therapists */}
+      {user?.role !== 'therapist' && prescriptionViewOpen && (
+        <PrescriptionView
+          isOpen={prescriptionViewOpen}
+          onClose={() => setPrescriptionViewOpen(false)}
+          prescription={prescriptionViewPrescription}
+          loading={false}
+          error={null}
+        />
+      )}
     </div>
   );
 };

@@ -18,11 +18,15 @@ import heroImage1 from '../assets/hero-1.jpg';
 import heroImage2 from '../assets/hero-2.jpg';
 import heroImage3 from '../assets/hero-3.jpg';
 import heroImage4 from '../assets/hero-4.jpg';
+import PopupModal from '../components/PopupModal';
+import { useAuth } from '../contexts/AuthContext';
 
 
 const LandingPage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { sessions, therapists } = useBooking();
+  const { user } = useAuth();
+  const [showPopup, setShowPopup] = useState(false);
 
   const heroImages = [
     heroImage1,
@@ -37,6 +41,16 @@ const LandingPage = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, [heroImages.length]);
+
+  useEffect(() => {
+    if (user?.role === 'client' && localStorage.getItem('showClientWelcome') === 'true') {
+      const timer = setTimeout(() => {
+        setShowPopup(true);
+        localStorage.removeItem('showClientWelcome');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
 
   const features = [
     {
@@ -438,6 +452,7 @@ const LandingPage = () => {
           </motion.div>
         </div>
       </section>
+      <PopupModal isOpen={showPopup} onClose={() => setShowPopup(false)} />
     </div>
   );
 };

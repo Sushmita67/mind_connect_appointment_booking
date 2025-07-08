@@ -3,12 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import PopupModal from '../components/PopupModal';
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
+  const [pendingRedirect, setPendingRedirect] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -22,6 +25,9 @@ const Login = () => {
       // Redirect therapists to their dashboard, others to home
       if (user?.role === 'therapist') {
         navigate('/my-appointments');
+      } else if (user?.role === 'client') {
+        localStorage.setItem('showClientWelcome', 'true');
+        navigate('/');
       } else {
         navigate('/');
       }
@@ -29,6 +35,14 @@ const Login = () => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePopupClose = () => {
+    setShowPopup(false);
+    if (pendingRedirect) {
+      setPendingRedirect(false);
+      navigate('/');
     }
   };
 

@@ -26,9 +26,9 @@ const BookingPage = () => {
   // Conditionally define steps based on user authentication
   const steps = [
     { label: 'Session', component: SessionStep },
+    { label: 'Therapist', component: TherapistStep },
     { label: 'Date', component: DateStep },
     { label: 'Time', component: TimeStep },
-    { label: 'Therapist', component: TherapistStep },
     // Only include GuestInfoStep if user is not logged in
     ...(user ? [] : [{ label: 'Your Info', component: GuestInfoStep }]),
     { label: 'Review & Pay', component: ReviewStep },

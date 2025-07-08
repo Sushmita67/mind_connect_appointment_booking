@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { API_BASE_URL } from '../config/api';
 
 const BookingContext = createContext();
@@ -27,6 +27,10 @@ export const BookingProvider = ({ children }) => {
   const [sessions, setSessions] = useState([]);
   const [therapists, setTherapists] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [prescriptions, setPrescriptions] = useState([]);
+  const [selectedPrescription, setSelectedPrescription] = useState(null);
+  const [prescriptionLoading, setPrescriptionLoading] = useState(false);
+  const [prescriptionError, setPrescriptionError] = useState('');
 
   // Fetch sessions and therapists on mount
   useEffect(() => {
@@ -60,10 +64,19 @@ export const BookingProvider = ({ children }) => {
     }
   };
 
-  const getAvailableTimes = () => [
-    '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
-    '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
-  ];
+  // Returns available times for a therapist on a given date
+  const getAvailableTimes = (therapistId, date) => {
+    const allTimes = [
+      '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
+      '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'
+    ];
+    if (!therapistId || !date) return allTimes;
+    // Find appointments for this therapist and date
+    const bookedTimes = appointments
+      .filter(apt => apt.therapist && apt.therapist._id === therapistId && apt.date === date && apt.status !== 'cancelled')
+      .map(apt => apt.time);
+    return allTimes.filter(time => !bookedTimes.includes(time));
+  };
 
   const getAvailableDates = () => {
     const dates = [];
@@ -164,7 +177,8 @@ export const BookingProvider = ({ children }) => {
     }
   };
 
-  const fetchUserAppointments = async () => {
+  // Memoized fetch functions to avoid infinite update loops
+  const fetchUserAppointments = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
@@ -184,9 +198,9 @@ export const BookingProvider = ({ children }) => {
     } catch (error) {
       console.error('Error fetching appointments:', error);
     }
-  };
+  }, []);
 
-  const fetchTherapistAppointments = async () => {
+  const fetchTherapistAppointments = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
@@ -206,7 +220,114 @@ export const BookingProvider = ({ children }) => {
     } catch (error) {
       console.error('Error fetching therapist appointments:', error);
     }
+  }, []);
+
+  // Fetch appointments for a therapist by id and date (public)
+  const fetchTherapistAppointmentsPublic = async (therapistId, date) => {
+    try {
+      let url = `${API_BASE_URL}/appointments/therapist/${therapistId}`;
+      if (date) {
+        url += `?date=${date}`;
+      }
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.success) {
+        return data.data;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      return [];
+    }
   };
+
+  // Prescription context methods
+  const fetchPrescriptionByAppointment = useCallback(async (appointmentId) => {
+    setPrescriptionLoading(true);
+    setPrescriptionError('');
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/prescriptions/appointment/${appointmentId}`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      });
+      const data = await response.json();
+      if (data.success) {
+        setSelectedPrescription(data.data);
+        return data.data;
+      } else {
+        setSelectedPrescription(null);
+        setPrescriptionError(data.message || 'No prescription found');
+        return null;
+      }
+    } catch (error) {
+      setPrescriptionError('Failed to fetch prescription');
+      setSelectedPrescription(null);
+      return null;
+    } finally {
+      setPrescriptionLoading(false);
+    }
+  }, []);
+
+  const createOrUpdatePrescription = useCallback(async ({ appointmentId, therapistId, patientId, notes, prescriptionId }) => {
+    setPrescriptionLoading(true);
+    setPrescriptionError('');
+    try {
+      const token = localStorage.getItem('token');
+      const method = prescriptionId ? 'PUT' : 'POST';
+      const url = prescriptionId ? `${API_BASE_URL}/prescriptions/${prescriptionId}` : `${API_BASE_URL}/prescriptions`;
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          appointment: appointmentId,
+          therapist: therapistId,
+          patient: patientId,
+          notes
+        })
+      });
+      const data = await response.json();
+      if ((response.ok && data.success) || (response.status === 200 && data.success)) {
+        setSelectedPrescription(data.data);
+        return { success: true, data: data.data };
+      } else {
+        setPrescriptionError(data.message || 'Failed to save prescription');
+        return { success: false, error: data.message };
+      }
+    } catch (err) {
+      setPrescriptionError('Failed to save prescription');
+      return { success: false, error: 'Failed to save prescription' };
+    } finally {
+      setPrescriptionLoading(false);
+    }
+  }, []);
+
+  const deletePrescription = useCallback(async (prescriptionId) => {
+    setPrescriptionLoading(true);
+    setPrescriptionError('');
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE_URL}/prescriptions/${prescriptionId}`, {
+        method: 'DELETE',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setSelectedPrescription(null);
+        return { success: true };
+      } else {
+        setPrescriptionError(data.message || 'Failed to delete prescription');
+        return { success: false, error: data.message };
+      }
+    } catch (err) {
+      setPrescriptionError('Failed to delete prescription');
+      return { success: false, error: 'Failed to delete prescription' };
+    } finally {
+      setPrescriptionLoading(false);
+    }
+  }, []);
 
   const cancelAppointment = async (appointmentId) => {
     try {
@@ -309,7 +430,16 @@ export const BookingProvider = ({ children }) => {
     therapists,
     loading,
     getAvailableTimes,
-    getAvailableDates
+    getAvailableDates,
+    // Prescription context
+    prescriptions,
+    selectedPrescription,
+    prescriptionLoading,
+    prescriptionError,
+    fetchPrescriptionByAppointment,
+    createOrUpdatePrescription,
+    deletePrescription,
+    fetchTherapistAppointmentsPublic,
   };
 
   return (

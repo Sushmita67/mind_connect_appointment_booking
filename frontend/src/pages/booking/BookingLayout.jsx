@@ -2,9 +2,9 @@ import React from 'react';
 
 const steps = [
   'Session',
+  'Therapist',
   'Date',
   'Time',
-  'Therapist',
   'Your Info',
   'Review',
   'Confirmation'

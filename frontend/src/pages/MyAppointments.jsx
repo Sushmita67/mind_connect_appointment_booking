@@ -9,8 +9,22 @@ import TherapistDashboard from './TherapistDashboard';
 import PrescriptionView from '../components/PrescriptionView';
 
 const MyAppointments = () => {
-  const { user } = useAuth();
-  const { appointments, fetchUserAppointments, fetchTherapistAppointments, cancelAppointment, getUpcomingAppointments, getPastAppointments, setCurrentStep, updateBookingData, addToCart } = useBooking();
+  const { user, loading: authLoading } = useAuth();
+  const {
+    appointments,
+    fetchUserAppointments,
+    fetchTherapistAppointments,
+    cancelAppointment,
+    getUpcomingAppointments,
+    getPastAppointments,
+    setCurrentStep,
+    updateBookingData,
+    addToCart,
+    fetchPrescriptionByAppointment,
+    selectedPrescription,
+    prescriptionLoading,
+    prescriptionError
+  } = useBooking();
   const [activeTab, setActiveTab] = useState('upcoming');
   const [loading, setLoading] = useState(true);
   const [rescheduleModal, setRescheduleModal] = useState({ isOpen: false, appointment: null });
@@ -19,14 +33,15 @@ const MyAppointments = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
+    if (!authLoading && user) {
+      setLoading(true);
       if (user.role === 'therapist') {
         fetchTherapistAppointments().finally(() => setLoading(false));
       } else {
         fetchUserAppointments().finally(() => setLoading(false));
       }
     }
-  }, [user, fetchUserAppointments, fetchTherapistAppointments]);
+  }, [user, authLoading]);
 
   const upcomingAppointments = getUpcomingAppointments();
   const pastAppointments = getPastAppointments();
@@ -89,6 +104,12 @@ const MyAppointments = () => {
 
   const closeRescheduleModal = () => {
     setRescheduleModal({ isOpen: false, appointment: null });
+  };
+
+  const handleViewPrescription = async (appointment) => {
+    setSelectedAppointment(appointment);
+    setPrescriptionViewOpen(true);
+    await fetchPrescriptionByAppointment(appointment._id);
   };
 
   const appointmentsToShow = activeTab === 'upcoming' ? upcomingAppointments : pastAppointments;
@@ -364,7 +385,7 @@ const MyAppointments = () => {
                           <div className="flex gap-2 mt-2">
                             <button
                               className="px-3 py-1 bg-secondary-600 text-white rounded hover:bg-secondary-700 text-xs"
-                              onClick={() => { setSelectedAppointment(appointment); setPrescriptionViewOpen(true); }}
+                              onClick={() => handleViewPrescription(appointment)}
                             >
                               View Prescription/Notes
                             </button>
@@ -393,7 +414,9 @@ const MyAppointments = () => {
       <PrescriptionView
         isOpen={prescriptionViewOpen}
         onClose={() => setPrescriptionViewOpen(false)}
-        appointmentId={selectedAppointment?._id}
+        prescription={selectedPrescription}
+        loading={prescriptionLoading}
+        error={prescriptionError}
       />
     </div>
   );

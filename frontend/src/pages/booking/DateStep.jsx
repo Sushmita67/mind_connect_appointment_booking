@@ -29,6 +29,9 @@ const DateStep = ({ goNext, goBack, bookingData, updateBookingData }) => {
   // Helper for today at midnight
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  // Calculate max date (3 months from today)
+  const maxDate = new Date(today);
+  maxDate.setMonth(maxDate.getMonth() + 3);
 
   return (
     <div className="max-w-xl mx-auto">
@@ -47,14 +50,15 @@ const DateStep = ({ goNext, goBack, bookingData, updateBookingData }) => {
             }}
             value={selectedDateObj}
             tileClassName={({ date }) => {
-              if (date.getDay() === 6 || date <= today) return 'calendar-disabled';
+              if (date.getDay() === 6 || date <= today || date > maxDate) return 'calendar-disabled';
               return '';
             }}
-            tileDisabled={({ date }) => date.getDay() === 6 || date <= today}
+            tileDisabled={({ date }) => date.getDay() === 6 || date <= today || date > maxDate}
             prev2Label={null}
             next2Label={null}
             calendarType="gregory"
             showNeighboringMonth={false}
+            maxDate={maxDate}
           />
         </div>
       </div>

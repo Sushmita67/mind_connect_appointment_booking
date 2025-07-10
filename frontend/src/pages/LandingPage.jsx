@@ -429,7 +429,7 @@ const LandingPage = () => {
       </section>
 
       {/* Instagram/FOLLOW US Section */}
-      <section className="pt-20 bg-white p-12">
+      <section className="pt-10 bg-white p-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold mb-2">FOLLOW US</h2>

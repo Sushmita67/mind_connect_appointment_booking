@@ -77,12 +77,12 @@ const Footer = () => {
             {faqs.map((faq, idx) => (
               <div key={idx}>
                 <button
-                  className="w-full text-left font-semibold focus:outline-none flex justify-between items-center"
+                  className="w-full text-left font-semibold focus:outline-none flex items-center"
                   onClick={() => toggleFAQ(idx)}
                   aria-expanded={openIndex === idx}
                 >
-                  {faq.question}
-                  <span>{openIndex === idx ? '-' : '+'}</span>
+                                   <span className="mr-3">{openIndex === idx ? '-' : '+'}</span>
+                                   {faq.question}
                 </button>
                 {openIndex === idx && (
                   <p className="mt-2 text-sm text-secondary-200">{faq.answer}</p>

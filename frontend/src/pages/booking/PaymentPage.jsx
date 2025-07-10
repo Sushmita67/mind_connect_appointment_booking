@@ -85,18 +85,18 @@ const PaymentPage = ({ goBack, bookingData }) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-10">
+    <div className="max-w-2xl mx-auto bg-white rounded-xl p-8 mt-10">
       <h2 className="text-3xl font-extrabold mb-8 text-center tracking-tight text-primary-700">Payments</h2>
-      <div className="bg-secondary-50 rounded-2xl p-6 mb-8 shadow-sm border border-secondary-100">
+      <div className="bg-secondary-50 rounded-2xl p-6 mb-8 border border-secondary-100">
         <div className="mb-6 font-semibold text-secondary-900">Select Payment Methods</div>
-        <div className="flex gap-8 mb-8">
+        <div className="flex justify-center gap-8 mb-12">
           {paymentOptions.map((option) => (
             <label
               key={option.value}
-              className={`flex flex-col items-center border rounded-xl px-8 py-4 cursor-pointer transition-all ${paymentMethod === option.value ? 'border-primary-600 bg-primary-50' : 'border-secondary-200 bg-white'}`}
+              className={`flex flex-col items-center border rounded-xl px-8 py-4 cursor-pointer transition-all font-semibold text-secondary-700 text-base ${paymentMethod === option.value ? 'border-primary-600 bg-primary-50' : 'border-secondary-200 bg-white hover:border-primary-300'} focus-within:ring-2 focus-within:ring-primary-300`}
             >
               <img src={option.logo} alt={option.label} className="w-12 h-12 object-contain mb-2" />
-              <span className="font-medium mb-2">{option.label}</span>
+              <span className="mb-2 text-lg font-semibold">{option.label}</span>
               <input
                 type="radio"
                 name="paymentMethod"
@@ -114,18 +114,18 @@ const PaymentPage = ({ goBack, bookingData }) => {
         </div>
         <div className="flex justify-between mt-8">
           <button
-            className="px-6 py-3 rounded-lg border border-secondary-300 bg-white text-secondary-700 font-semibold shadow hover:bg-secondary-100 focus:outline-none focus:ring-2 focus:ring-secondary-400 flex items-center gap-2 transition-all"
+            className="px-6 py-3 rounded-lg border border-secondary-300 bg-white text-secondary-700 font-semibold hover:bg-secondary-100 focus:outline-none focus:ring-2 focus:ring-secondary-400 flex items-center gap-2 transition-all"
             onClick={goBack}
             disabled={isProcessing}
           >
             <ArrowLeft size={18} /> Back
           </button>
           <button
-            className="px-6 py-3 rounded-lg bg-primary-700 text-white font-semibold shadow hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-400 flex items-center gap-2 disabled:opacity-50 transition-all"
+            className="px-6 py-3 rounded-lg bg-primary-700 text-white font-semibold hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-400 flex items-center gap-2 disabled:opacity-50 transition-all"
             onClick={handlePayment}
             disabled={isProcessing}
           >
-            {isProcessing ? 'Processing...' : (<><span>Confirm Payment</span> <ArrowRight size={18} /></>)}
+            {isProcessing ? 'Processing...' : 'Confirm Payment'}
           </button>
         </div>
       </div>

@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     question: 'How do I contact support?',
-    answer: 'You can reach out to our support team using the contact form below or by emailing support@mindconnect.com.'
+    answer: 'You can reach out to our support team using the contact form below or by emailing mindconnect2025@gmail.com.'
   }
 ];
 
@@ -56,7 +56,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-secondary-900 text-white py-12">
+    <footer className="bg-primary-900 text-white py-12">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Important Links */}
         <div>
@@ -96,8 +96,8 @@ const Footer = () => {
         <div>
           <h3 className="font-bold text-lg mb-4">Contact Us</h3>
           <p className="mb-2 text-secondary-200">Have more questions or need support?</p>
-          <p className="mb-2 text-secondary-200">Email: <a href="mailto:support@mindconnect.com" className="underline">support@mindconnect.com</a></p>
-          <p className="mb-2 text-secondary-200">Phone: <a href="tel:+1234567890" className="underline">+1 234 567 890</a></p>
+          <p className="mb-2 text-secondary-200">Email: <a href="mindconnect2025@gmail.com" className="underline">mindconnect2025@gmail.com</a></p>
+          <p className="mb-2 text-secondary-200">Phone: <a href="tel:+977 9812345678" className="underline">+977 9812345678</a></p>
           <button
             onClick={() => setContactModalOpen(true)}
             className="inline-block mt-4 bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded transition"
@@ -107,7 +107,7 @@ const Footer = () => {
         </div>
       </div>
       <ContactModal isOpen={contactModalOpen} onClose={() => setContactModalOpen(false)} />
-      <div className="mt-12 text-center text-secondary-400 text-sm">&copy; {new Date().getFullYear()} MindConnect. All rights reserved.</div>
+      <div className="mt-12 text-center text-primary-900 text-sm">&copy; {new Date().getFullYear()} MindConnect. All rights reserved.</div>
     </footer>
   );
 };

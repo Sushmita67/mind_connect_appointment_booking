@@ -445,7 +445,7 @@ const LandingPage = () => {
             </div>
             {/* Center Instagram Info */}
             <div className="flex flex-col items-center justify-center">
-              <p className="mb-4 text-secondary-700">Connect with us on Instagram to see our services</p>
+              <p className="mb-4 text-secondary-700 text-center">Connect with us on Instagram <br></br> to see our services</p>
               <img src={instagramLogo} alt="Instagram" className="w-12 h-12 mb-2" />
               <div className="font-bold text-lg">@mind.connect</div>
             </div>

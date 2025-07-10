@@ -94,7 +94,7 @@ const topics = [
     content: (
       <>
         <h2 className="text-xl font-bold mb-2">Contact & Support</h2>
-        <p>If you need help or have questions, contact us at <a href="mailto:support@mindconnect.com" className="underline">support@mindconnect.com</a> or call <a href="tel:+1234567890" className="underline">+1 234 567 890</a>.</p>
+        <p>If you need help or have questions, contact us at <a href="mailto:mindconnect2025@gmail.com" ><strong>mindconnect2025@gmail.com</strong></a> <br></br>or call <a href="tel:+977 9812345678"><strong>+977 9812345678 </strong></a>.</p>
       </>
     )
   }

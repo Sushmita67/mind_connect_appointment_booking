@@ -9,6 +9,7 @@ import TimeStep from './booking/TimeStep';
 import TherapistStep from './booking/TherapistStep';
 import GuestInfoStep from './booking/GuestInfoStep';
 import ReviewStep from './booking/ReviewStep';
+import PaymentPage from './booking/PaymentPage';
 
 const BookingPage = () => {
   const { user } = useAuth();
@@ -31,7 +32,8 @@ const BookingPage = () => {
     { label: 'Time', component: TimeStep },
     // Only include GuestInfoStep if user is not logged in
     ...(user ? [] : [{ label: 'Your Info', component: GuestInfoStep }]),
-    { label: 'Review & Pay', component: ReviewStep },
+    { label: 'Review', component: ReviewStep },
+    { label: 'Payment', component: PaymentPage },
   ];
 
   // Stepper logic

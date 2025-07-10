@@ -20,6 +20,15 @@ import heroImage3 from '../assets/hero-3.jpg';
 import heroImage4 from '../assets/hero-4.jpg';
 import PopupModal from '../components/PopupModal';
 import { useAuth } from '../contexts/AuthContext';
+import instagramLogo from '../assets/instagram-logo.png';
+import pexelsPixabay from '../assets/mental health images/pexels-pixabay-159211.jpg';
+import pexelsShvetsa from '../assets/mental health images/pexels-shvetsa-4672710.jpg';
+import pexelsBrettSayles from '../assets/mental health images/pexels-brett-sayles-2821220.jpg';
+import pexelsFotiosPhotos from '../assets/mental health images/pexels-fotios-photos-3972441.jpg';
+import pexelsVieStudio from '../assets/mental health images/pexels-vie-studio-7006256.jpg';
+import pexelsDanielReche from '../assets/mental health images/pexels-daniel-reche-718241-3601097.jpg';
+import pexelsEmmaBauso from '../assets/mental health images/pexels-emma-bauso-1183828-3585811.jpg';
+import pexelsCottonbro from '../assets/mental health images/pexels-cottonbro-4098362.jpg';
 
 
 const LandingPage = () => {
@@ -419,37 +428,35 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary-600 to-primary-800">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Ready to Start Your Journey?
-            </h2>
-            <p className="text-xl text-primary-100 mb-8">
-              Book your first therapy session today and take the first step towards better mental health
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/booking"
-                className="bg-white text-primary-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 group"
-              >
-                Book Your First Session
-                <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                to="/signup"
-                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-600 px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2"
-              >
-                Create Account
-              </Link>
+      {/* Instagram/FOLLOW US Section */}
+      <section className="pt-20 bg-white p-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">FOLLOW US</h2>
+            <div className="w-16 h-1 bg-secondary-200 mx-auto mb-4" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            {/* Left Images */}
+            <div className="grid grid-cols-2 gap-4">
+              <img src={pexelsPixabay} alt="You are not alone" className="rounded-lg object-cover w-full h-40" />
+              <img src={pexelsShvetsa} alt="Therapy session" className="rounded-lg object-cover w-full h-40" />
+              <img src={pexelsBrettSayles} alt="Sad person" className="rounded-lg object-cover w-full h-40" />
+              <img src={pexelsFotiosPhotos} alt="Supportive hand" className="rounded-lg object-cover w-full h-40" />
             </div>
-          </motion.div>
+            {/* Center Instagram Info */}
+            <div className="flex flex-col items-center justify-center">
+              <p className="mb-4 text-secondary-700">Connect with us on Instagram to see our services</p>
+              <img src={instagramLogo} alt="Instagram" className="w-12 h-12 mb-2" />
+              <div className="font-bold text-lg">@mind.connect</div>
+            </div>
+            {/* Right Images */}
+            <div className="grid grid-cols-2 gap-4">
+              <img src={pexelsVieStudio} alt="#BeKind" className="rounded-lg object-cover w-full h-40" />
+              <img src={pexelsDanielReche} alt="Pills" className="rounded-lg object-cover w-full h-40" />
+              <img src={pexelsEmmaBauso} alt="Mental health" className="rounded-lg object-cover w-full h-40" />
+              <img src={pexelsCottonbro} alt="Holding hands" className="rounded-lg object-cover w-full h-40" />
+            </div>
+          </div>
         </div>
       </section>
       <PopupModal isOpen={showPopup} onClose={() => setShowPopup(false)} />
